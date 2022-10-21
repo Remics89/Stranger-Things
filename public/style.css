@@ -1,0 +1,19 @@
+@import url(https://fonts.googleapis.com/css?family=Gloria+Hallelujah:regular);
+
+* {
+    font-family: Verdana, Geneva, Tahoma, sans-serif
+}
+.header {
+    font-family: Gloria Hallelujah;
+    font-size: xx-large;
+}
+
+#auth {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+#auth > input {
+    margin: 10px;
+}
