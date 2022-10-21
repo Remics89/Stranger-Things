@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 
-const Header = (props) => {
-
-    const [Location, setLocation] = useState("");
+const Header = () => {
 
     return (
         <div className="header">
