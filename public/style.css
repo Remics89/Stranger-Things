@@ -17,3 +17,8 @@
 #auth > input {
     margin: 10px;
 }
+
+.authMessage {
+    font-size: large;
+    font-weight: bold;
+}
