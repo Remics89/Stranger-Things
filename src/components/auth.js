@@ -1,10 +1,8 @@
-import React, { useState, Fragment } from "react";
+import React, { useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import { registerUser, userLogin } from "../api/api";
+import { getUser, registerUser, userLogin } from "../api/api";
 
-const AuthorizeUser = (props) => {
-    const { Auth, setAuth, setToken } = props;
-
+const AuthorizeUser = ({ setToken, setCurrentUser }) => {
     /*
     init state
     */
@@ -22,7 +20,7 @@ const AuthorizeUser = (props) => {
     const { action } = useParams();
     const history = useHistory();
 
-    const url = location.pathname;
+    const url = action === "Login" ? "Log In" : "Sign Up";
 
     /*
     user registration
@@ -31,7 +29,6 @@ const AuthorizeUser = (props) => {
     async function registration(user, pwd) {
         try {
             const data = await registerUser(user, pwd);
-            console.log(data.data.message);
 
             if (data.success) {
                 setHidden(true);
@@ -46,8 +43,8 @@ const AuthorizeUser = (props) => {
                 setSuccess(false);
                 setTimeout(() => {
                     setMessage("");
-                    setUsername("")
-                    setPassword("")
+                    setUsername("");
+                    setPassword("");
                 }, 5000);
             }
         } catch (error) {
@@ -67,9 +64,12 @@ const AuthorizeUser = (props) => {
                 setMessage(
                     data.data.message + " You are now being redirected back to the home page."
                 );
-                setHidden(true);
-                setAuth(true);
+
                 setSuccess(true);
+                setHidden(true);
+                setToken(data.data.token);
+                const getUsername = await getUser(data.data.token);
+                setCurrentUser(getUsername.data.username);
 
                 setTimeout(() => {
                     history.push("/");
@@ -77,10 +77,11 @@ const AuthorizeUser = (props) => {
             } else {
                 setMessage(data.error.message);
                 setSuccess(false);
+
                 setTimeout(() => {
                     setMessage("");
-                    setUsername("")
-                    setPassword("")
+                    setUsername("");
+                    setPassword("");
                 }, 5000);
             }
         } catch (error) {
@@ -93,19 +94,20 @@ const AuthorizeUser = (props) => {
     */
 
     return (
-        <div id="auth">
-            <h3>{url === "/Login" ? "Log In" : "Sign Up"}</h3>
-            <form
-                id="auth"
-                onSubmit={async (event) => {
-                    event.preventDefault();
-                    if (url === "/Login") {
-                        authUser(Username, Password);
-                    } else {
-                        registration(Username, Password);
-                    }
-                }}>
-                <label>{Success ? null : 'Username'}</label>
+        <form
+            className="ui form"
+            id="authpage"
+            onSubmit={async (event) => {
+                event.preventDefault();
+                if (url === "Log In") {
+                    authUser(Username, Password);
+                } else {
+                    registration(Username, Password);
+                }
+            }}>
+            <div className="field">
+                <h3>{url}</h3>
+                <label>{Success ? null : "Username"}</label>
                 <input
                     className="formElms"
                     type="text"
@@ -119,29 +121,32 @@ const AuthorizeUser = (props) => {
                         setUsername(inputVal);
                     }}
                 />
-
-                <label>{Success ? null : 'Password'}</label>
-                <input
-                    className="formElms"
-                    type="password"
-                    placeholder="Enter password"
-                    value={Password}
-                    minLength="8"
-                    required
-                    hidden={Hidden}
-                    onChange={(event) => {
-                        let inputVal = event.target.value;
-                        setPassword(inputVal);
-                    }}
-                />
-                <button className="formElms" type="submit" hidden={Hidden}>
-                    {url === "/Login" ? "Log In" : "Sign Up"}
+                <div className="field">
+                    <label>{Success ? null : "Password"}</label>
+                    <input
+                        className="formElms"
+                        type="password"
+                        placeholder="Enter password"
+                        value={Password}
+                        minLength="8"
+                        required
+                        hidden={Hidden}
+                        onChange={(event) => {
+                            let inputVal = event.target.value;
+                            setPassword(inputVal);
+                        }}
+                    />
+                </div>
+                <button className="ui button" type="submit" hidden={Hidden}>
+                    {url}
                 </button>
-            </form>
-            <div className="authMessage" style={Success ? { color: 'Green'} : { color: 'Red'}}>
-                {Message ? Message : null}
+                <div
+                    className="authMessage"
+                    style={Success ? { color: "Green" } : { color: "Red" }}>
+                    {Message ? Message : null}
+                </div>
             </div>
-        </div>
+        </form>
     );
 };
 
