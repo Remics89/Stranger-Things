@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Posts = (props) => {
-    const { Token, posts, setcurrentPost} = props;
+    const { Token, posts, setcurrentPost } = props;
 
     return (
         <div className="ui cards posts">
@@ -16,7 +16,7 @@ const Posts = (props) => {
                         </div>
                         <div className="extra content">
                             <div className="ui">
-                                <Link to="/Posts/post"
+                                <Link to={`/Posts/${post._id}`}
                                     className="ui positive basic button"
                                     onClick={() => {
                                         setcurrentPost(post);
