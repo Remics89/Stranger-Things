@@ -12,6 +12,8 @@ const App = () => {
 
     const history = useHistory();
 
+    /*  get posts on first render and pass returned array into posts state   */
+
     useEffect(() => {
         const getPosts = async () => {
             try {
@@ -25,6 +27,8 @@ const App = () => {
         getPosts();
     }, []);
 
+    /*  get currently logged in username each time token changes */
+
     useEffect(() => {
         const user = async () => {
             try {
@@ -37,6 +41,8 @@ const App = () => {
         user();
     }, [Token]);
 
+    /*  when token changes, pass token into local storage   */
+
     useEffect(() => {
         if (Token) {
             window.localStorage.setItem("token", Token);
@@ -45,10 +51,14 @@ const App = () => {
         }
     }, [Token]);
 
+    /*  helper function to log out user   */
+
     const logOut = () => {
         setToken("");
-        history.push('/')
+        history.push("/");
     };
+
+    /*  render header and define links and component routes   */
 
     return (
         <div className="app">
@@ -85,7 +95,7 @@ const App = () => {
 
             <Switch>
                 <Route exact path="/">
-                    <Home Token={Token} />
+                    <Home posts={posts} setPosts={setPosts} currentUser={currentUser} />
                 </Route>
                 <Route exact path="/Posts">
                     <Posts Token={Token} posts={posts} setcurrentPost={setcurrentPost} />
@@ -93,7 +103,7 @@ const App = () => {
                 <Route exact path="/Account/:action">
                     <AuthorizeUser setToken={setToken} setCurrentUser={setCurrentUser} />
                 </Route>
-                <Route path="/Posts/post">
+                <Route path="/Posts/:post">
                     <Post currentPost={currentPost} currentUser={currentUser} Token={Token} />
                 </Route>
                 <Route exact path="/Account/Dash">
