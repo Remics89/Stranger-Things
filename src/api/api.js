@@ -1,5 +1,7 @@
 const BASEURL = "https://strangers-things.herokuapp.com/api/2207-FTB-ET-WEB-PT/";
 
+/*  Function calling all the posts available    */
+
 export async function fetchPosts() {
     try {
         const response = await fetch(`${BASEURL}posts`);
@@ -9,6 +11,8 @@ export async function fetchPosts() {
         console.error(error);
     }
 }
+
+/*  Function defining a user registering for an account    */
 
 export const registerUser = async (username, password) => {
     try {
@@ -32,6 +36,8 @@ export const registerUser = async (username, password) => {
     }
 };
 
+/*  Function defining what user is currently logged in    */
+
 export async function getUser(token) {
     try {
         const response = await fetch(`${BASEURL}users/me`, {
@@ -51,6 +57,32 @@ export async function getUser(token) {
 export async function createPost() {}
 
 export async function deletePost() {}
+
+/*  Function defining sending messages on a post    */
+
+export async function sendMessage(postID, comment, token) {
+    try {
+        const response = await fetch(`${BASEURL}POSTS/${postID}/messages`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                message: {
+                    content: comment,
+                },
+            }),
+        });
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/*  Function defining a user logging in    */
 
 export const userLogin = async (username, password) => {
     try {
