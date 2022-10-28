@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getUser, registerUser, userLogin } from "../api/api";
 
 const AuthorizeUser = ({ setToken, setCurrentUser }) => {
@@ -18,7 +18,6 @@ const AuthorizeUser = ({ setToken, setCurrentUser }) => {
     */
 
     const { action } = useParams();
-    const history = useHistory();
 
     const url = action === "Login" ? "Log In" : "Sign Up";
 
@@ -34,10 +33,6 @@ const AuthorizeUser = ({ setToken, setCurrentUser }) => {
                 setHidden(true);
                 setMessage(data.data.message);
                 setSuccess(true);
-
-                setTimeout(() => {
-                    history.push("/");
-                }, 7500);
             } else {
                 setMessage(data.error.message);
                 setSuccess(false);
@@ -61,19 +56,13 @@ const AuthorizeUser = ({ setToken, setCurrentUser }) => {
             const data = await userLogin(user, pwd);
 
             if (data.success) {
-                setMessage(
-                    data.data.message + " You are now being redirected back to the home page."
-                );
+                setMessage(data.data.message);
 
                 setSuccess(true);
                 setHidden(true);
                 setToken(data.data.token);
                 const getUsername = await getUser(data.data.token);
                 setCurrentUser(getUsername.data.username);
-
-                setTimeout(() => {
-                    history.push("/");
-                }, 7500);
             } else {
                 setMessage(data.error.message);
                 setSuccess(false);
@@ -106,8 +95,9 @@ const AuthorizeUser = ({ setToken, setCurrentUser }) => {
                 }
             }}>
             <div className="field">
-                <h3>{url}</h3>
+                <h3>{Success ? null : url}</h3>
                 <label>{Success ? null : "Username"}</label>
+
                 <input
                     className="formElms"
                     type="text"
@@ -121,6 +111,7 @@ const AuthorizeUser = ({ setToken, setCurrentUser }) => {
                         setUsername(inputVal);
                     }}
                 />
+
                 <div className="field">
                     <label>{Success ? null : "Password"}</label>
                     <input
@@ -137,9 +128,11 @@ const AuthorizeUser = ({ setToken, setCurrentUser }) => {
                         }}
                     />
                 </div>
-                <button className="ui button" type="submit" hidden={Hidden}>
-                    {url}
-                </button>
+                {Success ? null : (
+                    <button className="ui button" type="submit">
+                        {url}
+                    </button>
+                )}
                 <div
                     className="authMessage"
                     style={Success ? { color: "Green" } : { color: "Red" }}>
