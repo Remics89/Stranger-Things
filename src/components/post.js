@@ -5,18 +5,32 @@ import { useParams } from "react-router-dom";
 import { sendMessage } from "../api/api";
 
 const Post = (props) => {
-    const { currentPost, currentUser, Token } = props;
+    const { currentUser, Token, posts } = props;
+
+    const param = useParams();
+
+    const currentPostID = param.postID;
+
+    let currentPost = {};
+
+    for (let key in posts) {
+        const post = posts[key];
+        const postID = post._id;
+
+        if (postID === currentPostID) {
+            currentPost = post;
+        }
+    }
+
 
     const [message, setmessage] = useState("");
     const [response, setresponse] = useState(null);
-
-    const currentPostID = useParams();
 
     /*  submit the message to the API and change the response state    */
 
     const handleMessageSubmit = async (event) => {
         event.preventDefault();
-        const result = await sendMessage(currentPost._id, message, Token);
+        const result = await sendMessage(currentPostID, message, Token);
         setresponse(result);
     };
 
@@ -29,22 +43,29 @@ const Post = (props) => {
     /*  change message header depending on whether sending the message was successful or not    */
 
     const messageHelper = () => {
-        console.log(response);
-
         if (response) {
-            if (response.success) {
-                return <h3 className="ui dividing header">Success: Message was sent!</h3>;
+            
+            const username = currentUser.data.username
+            if (response.success && username !== currentPost.author.username) {
+                
+                return (
+                    <h3 className="ui dividing header" style={{ border: "2px solid chartreuse" }}>
+                        Success: Message was sent!
+                    </h3>
+                );
             } else {
-                return <h3 className="ui dividing header">Fail: Message could not be sent.</h3>;
+                return (
+                    <h3 className="ui dividing header" style={{ border: "2px solid red" }}>
+                        Fail: Message could not be sent. You can't send messages to your own posts.
+                    </h3>
+                );
             }
         } else {
             return <h3 className="ui dividing header">Send a message to the post author:</h3>;
         }
     };
 
-
     /*  render individual post   */
-
     return (
         <div className="ui centered card" id="post">
             <div className="content" id="post">
@@ -81,7 +102,7 @@ const Post = (props) => {
                 <b>Price: </b>
                 {currentPost.price}
 
-                {Token && currentUser !== currentPost.createdBy  ? (
+                {Token ? (
                     <Fragment>
                         {messageHelper()}
                         <form className="ui reply form" onSubmit={handleMessageSubmit}>
