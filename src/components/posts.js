@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+
+/* main Posts component rendering all posts returned by the API */
+
 const Posts = (props) => {
-    const { Token, posts, setcurrentPost } = props;
+    const { posts } = props;
 
     return (
         <div className="ui cards posts">
@@ -16,11 +19,9 @@ const Posts = (props) => {
                         </div>
                         <div className="extra content">
                             <div className="ui">
-                                <Link to={`/Posts/${post._id}`}
-                                    className="ui positive basic button"
-                                    onClick={() => {
-                                        setcurrentPost(post);
-                                    }}>
+                                <Link
+                                    to={`/Posts/${post._id}`}
+                                    className="ui positive basic button">
                                     View Post
                                 </Link>
                             </div>
