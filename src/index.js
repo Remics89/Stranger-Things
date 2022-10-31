@@ -5,12 +5,14 @@ import { fetchPosts, getUser } from "./api/api";
 import { AuthorizeUser, Posts, Footer, Home, Post, Dashboard } from "./components";
 
 const App = () => {
-    const [currentUser, setCurrentUser] = useState("");
+    const [currentUser, setCurrentUser] = useState(null);
     const [Token, setToken] = useState(window.localStorage.getItem("token") || "");
+    
     const [posts, setPosts] = useState([]);
-    const [currentPost, setcurrentPost] = useState({});
 
     const history = useHistory();
+
+    
 
     /*  get posts on first render and pass returned array into posts state   */
 
@@ -18,7 +20,6 @@ const App = () => {
         const getPosts = async () => {
             try {
                 const result = await fetchPosts();
-                console.log("🚀 ~ getPosts ~ result", result);
                 setPosts(result.posts);
             } catch (error) {
                 throw error;
@@ -33,7 +34,7 @@ const App = () => {
         const user = async () => {
             try {
                 const result = await getUser(Token);
-                return result;
+                setCurrentUser(result)
             } catch (error) {
                 throw error;
             }
@@ -46,8 +47,6 @@ const App = () => {
     useEffect(() => {
         if (Token) {
             window.localStorage.setItem("token", Token);
-        } else {
-            window.localStorage.removeItem("token");
         }
     }, [Token]);
 
@@ -95,20 +94,21 @@ const App = () => {
 
             <Switch>
                 <Route exact path="/">
-                    <Home posts={posts} setPosts={setPosts} currentUser={currentUser} />
+                    <Home Token={Token} currentUser={currentUser} posts={posts} />
                 </Route>
                 <Route exact path="/Posts">
-                    <Posts Token={Token} posts={posts} setcurrentPost={setcurrentPost} />
+                    <Posts posts={posts} />
+                </Route>
+                <Route exact path="/Account/Dash">
+                    <Dashboard currentUser={currentUser} />
                 </Route>
                 <Route exact path="/Account/:action">
                     <AuthorizeUser setToken={setToken} setCurrentUser={setCurrentUser} />
                 </Route>
-                <Route path="/Posts/:post">
-                    <Post currentPost={currentPost} currentUser={currentUser} Token={Token} />
+                <Route path="/Posts/:postID">
+                    <Post currentUser={currentUser} Token={Token} posts={posts} />
                 </Route>
-                <Route exact path="/Account/Dash">
-                    <Dashboard />
-                </Route>
+                
             </Switch>
             <Footer />
         </div>
