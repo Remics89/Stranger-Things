@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { getUser, registerUser, userLogin } from "../api/api";
+import { registerUser, userLogin } from "../api/api";
 
-const AuthorizeUser = ({ setToken, setCurrentUser }) => {
+const AuthorizeUser = ({ setToken }) => {
     /*
     init state
     */
@@ -61,8 +61,6 @@ const AuthorizeUser = ({ setToken, setCurrentUser }) => {
                 setSuccess(true);
                 setHidden(true);
                 setToken(data.data.token);
-                const getUsername = await getUser(data.data.token);
-                setCurrentUser(getUsername.data.username);
             } else {
                 setMessage(data.error.message);
                 setSuccess(false);
