@@ -43,7 +43,7 @@ export async function getUser(token) {
         const response = await fetch(`${BASEURL}users/me`, {
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                "Authorization": `Bearer ${token}`,
             },
         });
 
@@ -54,9 +54,46 @@ export async function getUser(token) {
     }
 }
 
-export async function createPost() {}
+export async function createPost(Token, title, price, location, description, deliver) {
+    try {
+        const response = await fetch(`${BASEURL}posts`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Token}`
+            },
+            body: JSON.stringify({
+                post:   {
+                    title: title,
+                    description: description,
+                    price: price,
+                    willDeliver: deliver,
+                    location: location
+                }
+            })
+        })
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        
+    }
+}
 
-export async function deletePost() {}
+export async function deletePost(Token, postID) {
+    try {
+        const response = await fetch(`${BASEURL}posts/${postID}`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Token}`
+            }
+        })
+        const result = response.json();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
 
 /*  Function defining sending messages on a post    */
 
@@ -66,7 +103,7 @@ export async function sendMessage(postID, comment, token) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify({
                 message: {
